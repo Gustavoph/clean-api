@@ -7,6 +7,7 @@
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": false }]
+    "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": false }],
+    "@typescript-eslint/consistent-type-definitions": "off"
   }
 }
