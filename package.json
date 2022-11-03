@@ -1,8 +1,8 @@
 {
-  "name": "portal-clean-api",
+  "name": "boilerplate-clean-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,9 +10,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "git-commit-msg-linter": "^4.2.1"
-  },
-  "dependencies": {
+    "@types/node": "^18.11.9",
+    "git-commit-msg-linter": "^4.2.1",
+    "typescript": "^4.8.4",
     "eslint-config-standard-with-typescript": "^23.0.0"
-  }
+  },
+  "dependencies": {}
 }
