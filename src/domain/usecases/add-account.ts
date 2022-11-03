@@ -5,6 +5,6 @@ export interface AddAccount {
 }
 
 export namespace AddAccount {
-  export type Params = Omit<Account, 'id'>
+  export type Params = Omit<Account, 'id' | 'createdAt'>
   export type Result = Account
 }
