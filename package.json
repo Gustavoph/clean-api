@@ -11,5 +11,8 @@
   "license": "ISC",
   "devDependencies": {
     "git-commit-msg-linter": "^4.2.1"
+  },
+  "dependencies": {
+    "eslint-config-standard-with-typescript": "^23.0.0"
   }
 }
