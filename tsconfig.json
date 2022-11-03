@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "outDir": "./dist",
+    "outDir": "dist",
+    "module": "commonjs",
     "target": "es2019",
-    "module": "CommonJS",
     "esModuleInterop": true,
-    "allowJs": true,
-    "rootDir": "src",
+    "sourceMap": true,
+    "rootDirs": ["src", "tests"],
     "baseUrl": "src",
     "paths": {
+      "@/tests/*": ["../tests/*"],
       "@/*": ["*"]
     }
-  }
+  },
+  "include": ["src", "tests"],
+  "exclude": []
 }
-
