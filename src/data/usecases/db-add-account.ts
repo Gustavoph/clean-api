@@ -12,11 +12,9 @@ export class DbAddAccount implements AddAccount {
 
   async add (accountData: AddAccount.Params): Promise<Either<ExistingUserError, AddAccount.Result>> {
     const userExists = await this.findAccountByNameRepository.find(accountData.name)
-    if (!userExists) {
-      const hashedPassword = await this.encripter.encrypt(accountData.password)
-      const account = await this.addAccountRepository.add({ ...accountData, password: hashedPassword })
-      return right(account)
-    }
-    return left(new ExistingUserError(accountData.name))
+    if (userExists) return left(new ExistingUserError(accountData.name))
+    const hashedPassword = await this.encripter.encrypt(accountData.password)
+    const account = await this.addAccountRepository.add({ ...accountData, password: hashedPassword })
+    return right(account)
   }
 }

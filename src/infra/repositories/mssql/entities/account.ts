@@ -1,8 +1,9 @@
+import crypto from 'crypto'
 import { Column, Entity, PrimaryColumn } from 'typeorm'
 
 @Entity({ name: 'account', synchronize: false })
 export class AccountModel {
-  @PrimaryColumn({ type: 'varchar' })
+  @PrimaryColumn({ type: 'varchar', default: () => crypto.randomUUID })
     id: string
 
   @Column({ type: 'varchar' })
