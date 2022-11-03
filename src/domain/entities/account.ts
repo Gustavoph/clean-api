@@ -1,4 +1,4 @@
-export type User = {
+export type Account = {
   id: string
   name: string
   password: string
