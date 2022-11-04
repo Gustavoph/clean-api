@@ -43,7 +43,7 @@ const makeAddAccountRepository = (): AddAccountRepository => {
 const makeFindAccountByNameRepository = (): FindAccountByNameRepository => {
   class FindAccountByNameRepositoryStub implements FindAccountByNameRepository {
     async find (name: string): Promise<Account> {
-      return await Promise.resolve(makeFakeAccount())
+      return null
     }
   }
   return new FindAccountByNameRepositoryStub()
@@ -78,8 +78,18 @@ describe('DbAddAccount', () => {
   })
 
   it('Should return ExistingUser if FindAccountByNameRepository returns an Account', async () => {
-    const { sut } = makeSut()
+    const { sut, findAccountByNameRepositoryStub } = makeSut()
+    jest.spyOn(findAccountByNameRepositoryStub, 'find').mockImplementationOnce(async () => {
+      return await Promise.resolve(makeFakeAccount())
+    })
     const accountOrError = await sut.add(makeFakeAddAccountData())
     expect(accountOrError.value).toEqual(new NameAlreadyInUseError(makeFakeAddAccountData().name))
+  })
+
+  it('Should call Hasher with correct text', async () => {
+    const { sut, hasherStub } = makeSut()
+    const hashSpy = jest.spyOn(hasherStub, 'hash')
+    await sut.add(makeFakeAddAccountData())
+    expect(hashSpy).toHaveBeenCalledWith(makeFakeAddAccountData().password)
   })
 })
