@@ -77,6 +77,13 @@ describe('SignUp Controller', () => {
     expect(httpResponse).toEqual(badRequest(error))
   })
 
+  it('Should return 500 if Validation throws', async () => {
+    const { sut, validationStub } = makeSut()
+    jest.spyOn(validationStub, 'validate').mockImplementationOnce(makeThrow)
+    const httpResponse = await sut.handle(makeRequest())
+    expect(httpResponse).toEqual(serverError(new ServerError(null)))
+  })
+
   it('Should return 500 if AddAccount throws', async () => {
     const { sut, addAccountStub } = makeSut()
     jest.spyOn(addAccountStub, 'add').mockImplementationOnce(makeThrow)
