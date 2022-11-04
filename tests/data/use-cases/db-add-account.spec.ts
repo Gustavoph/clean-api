@@ -117,4 +117,13 @@ describe('DbAddAccount', () => {
     await sut.add(makeFakeAddAccountData())
     expect(addSpy).toHaveBeenCalledWith({ ...makeFakeAddAccountData(), password: 'hashed' })
   })
+
+  it('Should throw AddAccountRepository throws', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut()
+    jest.spyOn(addAccountRepositoryStub, 'add').mockImplementationOnce(async () => {
+      throw new Error('')
+    })
+    const promise = sut.add(makeFakeAddAccountData())
+    await expect(promise).rejects.toThrow()
+  })
 })
