@@ -4,7 +4,7 @@ import { AddAccount } from '@/domain/usecases'
 import { SignUpController } from '@/presentation/controllers'
 import { Validation } from '@/presentation/protocols'
 import { Either, left, right } from '@/shared'
-import { badRequest, serverError } from '@/presentation/helpers'
+import { badRequest, ok, serverError } from '@/presentation/helpers'
 import { ServerError } from '@/presentation/errors'
 
 const makeValidation = (): Validation => {
@@ -16,17 +16,19 @@ const makeValidation = (): Validation => {
   return new ValidationStub()
 }
 
+const makeFakeAccount = (): Account => ({
+  id: 'any_id',
+  name: 'any_name',
+  password: 'any_password',
+  sigeCode: 'any_sige_code',
+  createdAt: 'any_created_at',
+  permission: 'any_permission'
+})
+
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
     async add (account: AddAccount.Params): Promise<Either<ExistingUserError, Account>> {
-      return right({
-        id: 'any_id',
-        name: 'any_name',
-        password: 'any_password',
-        sigeCode: 'any_sige_code',
-        createdAt: 'any_created_at',
-        permission: 'any_permission'
-      })
+      return right(makeFakeAccount())
     }
   }
   return new AddAccountStub()
@@ -110,5 +112,11 @@ describe('SignUp Controller', () => {
     jest.spyOn(addAccountStub, 'add').mockImplementationOnce(makeThrow)
     const httpResponse = await sut.handle(makeRequest())
     expect(httpResponse).toEqual(serverError(new ServerError(null)))
+  })
+
+  it('Should return ok if valida data is provided', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle(makeRequest())
+    expect(httpResponse).toEqual(ok(makeFakeAccount()))
   })
 })
