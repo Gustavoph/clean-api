@@ -2,6 +2,7 @@ import { DbAddAccount } from '@/data/usecases'
 import { AddAccountRepository, Hasher, FindAccountByNameRepository } from '@/data/protocols'
 import { Account } from '@/domain/entities'
 import { AddAccount } from '@/domain/usecases'
+import { NameAlreadyInUseError } from '@/domain/errors'
 
 interface SutType {
   sut: DbAddAccount
@@ -76,10 +77,9 @@ describe('DbAddAccount', () => {
     expect(findSpy).toHaveBeenCalledWith(makeFakeAddAccountData().name)
   })
 
-  it('Should call FindAccountByNameRepository with correct name', async () => {
-    const { sut, findAccountByNameRepositoryStub } = makeSut()
-    const findSpy = jest.spyOn(findAccountByNameRepositoryStub, 'find')
-    await sut.add(makeFakeAddAccountData())
-    expect(findSpy).toHaveBeenCalledWith(makeFakeAddAccountData().name)
+  it('Should return ExistingUser if FindAccountByNameRepository returns an Account', async () => {
+    const { sut } = makeSut()
+    const accountOrError = await sut.add(makeFakeAddAccountData())
+    expect(accountOrError.value).toEqual(new NameAlreadyInUseError(makeFakeAddAccountData().name))
   })
 })

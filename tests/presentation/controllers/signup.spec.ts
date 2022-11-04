@@ -1,5 +1,5 @@
 import { Account } from '@/domain/entities'
-import { ExistingUserError } from '@/domain/errors'
+import { NameAlreadyInUseError } from '@/domain/errors'
 import { AddAccount } from '@/domain/usecases'
 import { SignUpController } from '@/presentation/controllers'
 import { Validation } from '@/presentation/protocols'
@@ -27,7 +27,7 @@ const makeFakeAccount = (): Account => ({
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
-    async add (account: AddAccount.Params): Promise<Either<ExistingUserError, Account>> {
+    async add (account: AddAccount.Params): Promise<Either<NameAlreadyInUseError, Account>> {
       return right(makeFakeAccount())
     }
   }
@@ -101,10 +101,10 @@ describe('SignUp Controller', () => {
   it('Should return badRequest if AddAccount return an error', async () => {
     const { sut, addAccountStub } = makeSut()
     jest.spyOn(addAccountStub, 'add').mockImplementationOnce(async () => {
-      return left(new ExistingUserError('any_name'))
+      return left(new NameAlreadyInUseError('any_name'))
     })
     const httpResponse = await sut.handle(makeRequest())
-    expect(httpResponse).toEqual(badRequest(new ExistingUserError('any_name')))
+    expect(httpResponse).toEqual(badRequest(new NameAlreadyInUseError('any_name')))
   })
 
   it('Should return serverError if AddAccount throws', async () => {
