@@ -3,7 +3,7 @@ import { ExistingUserError } from '@/domain/errors'
 import { AddAccount } from '@/domain/usecases'
 import { SignUpController } from '@/presentation/controllers'
 import { Validation } from '@/presentation/protocols'
-import { Either, right } from '@/shared'
+import { Either, left, right } from '@/shared'
 import { badRequest, serverError } from '@/presentation/helpers'
 import { ServerError } from '@/presentation/errors'
 
@@ -69,7 +69,7 @@ describe('SignUp Controller', () => {
     expect(validationSpy).toHaveBeenCalledWith(makeRequest())
   })
 
-  it('Should return 400 if Validation return an error', async () => {
+  it('Should return badRequest if Validation return an error', async () => {
     const error = new Error('')
     const { sut, validationStub } = makeSut()
     jest.spyOn(validationStub, 'validate').mockImplementationOnce(() => error)
@@ -77,7 +77,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse).toEqual(badRequest(error))
   })
 
-  it('Should return 500 if Validation throws', async () => {
+  it('Should return serverError if Validation throws', async () => {
     const { sut, validationStub } = makeSut()
     jest.spyOn(validationStub, 'validate').mockImplementationOnce(makeThrow)
     const httpResponse = await sut.handle(makeRequest())
@@ -96,7 +96,16 @@ describe('SignUp Controller', () => {
     })
   })
 
-  it('Should return 500 if AddAccount throws', async () => {
+  it('Should return badRequest if AddAccount return an error', async () => {
+    const { sut, addAccountStub } = makeSut()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(async () => {
+      return left(new ExistingUserError('any_name'))
+    })
+    const httpResponse = await sut.handle(makeRequest())
+    expect(httpResponse).toEqual(badRequest(new ExistingUserError('any_name')))
+  })
+
+  it('Should return serverError if AddAccount throws', async () => {
     const { sut, addAccountStub } = makeSut()
     jest.spyOn(addAccountStub, 'add').mockImplementationOnce(makeThrow)
     const httpResponse = await sut.handle(makeRequest())
