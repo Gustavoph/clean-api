@@ -7,42 +7,71 @@ import { Either, right } from '@/shared'
 import { serverError } from '@/presentation/helpers'
 import { ServerError } from '@/presentation/errors'
 
+const makeValidation = (): Validation => {
+  class ValidationStub implements Validation {
+    validate (input: any): Error {
+      return null
+    }
+  }
+  return new ValidationStub()
+}
+
+const makeAddAccount = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    async add (account: AddAccount.Params): Promise<Either<ExistingUserError, Account>> {
+      return right({
+        id: 'any_id',
+        name: 'any_name',
+        password: 'any_password',
+        sigeCode: 'any_sige_code',
+        createdAt: 'any_created_at',
+        permission: 'any_permission'
+      })
+    }
+  }
+  return new AddAccountStub()
+}
+
+const makeRequest = (): SignUpController.Request => ({
+  name: 'any_name',
+  password: 'any_password',
+  sigeCode: 'any_sigeCode',
+  permission: 'any_permission',
+  passwordConfirmation: 'any_password_confirmation'
+})
+
+interface SutType {
+  validationStub: Validation
+  addAccountStub: AddAccount
+  sut: SignUpController
+}
+
+const makeSut = (): SutType => {
+  const validationStub = makeValidation()
+  const addAccountStub = makeAddAccount()
+  const sut = new SignUpController(validationStub, addAccountStub)
+  return {
+    sut,
+    addAccountStub,
+    validationStub
+  }
+}
+
 describe('SignUp Controller', () => {
+  it('Should call Validation with correct values', async () => {
+    const { sut, validationStub } = makeSut()
+    const validationSpy = jest.spyOn(validationStub, 'validate')
+    await sut.handle(makeRequest())
+    expect(validationSpy).toHaveBeenCalledWith(makeRequest())
+  })
+
   it('Should return 500 if AddAccount throws', async () => {
-    class ValidationSpy implements Validation {
-      validate (input: any): Error {
-        return null
-      }
-    }
-
-    class AddAccountSpy implements AddAccount {
-      async add (account: AddAccount.Params): Promise<Either<ExistingUserError, Account>> {
-        return right({
-          id: 'any_id',
-          name: 'any_name',
-          password: 'any_password',
-          sigeCode: 'any_sige_code',
-          createdAt: 'any_created_at',
-          permission: 'any_permission'
-        })
-      }
-    }
-
-    const validationSpy = new ValidationSpy()
-    const addAccountSpy = new AddAccountSpy()
-    jest.spyOn(addAccountSpy, 'add').mockImplementationOnce((): never => {
+    const { sut, addAccountStub } = makeSut()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce((): never => {
       throw new Error()
     })
 
-    const sut = new SignUpController(validationSpy, addAccountSpy)
-    const request: SignUpController.Request = {
-      name: 'any_name',
-      password: 'any_password',
-      sigeCode: 'any_sigeCode',
-      permission: 'any_permission',
-      passwordConfirmation: 'any_password_confirmation'
-    }
-    const httpResponse = await sut.handle(request)
+    const httpResponse = await sut.handle(makeRequest())
     expect(httpResponse).toEqual(serverError(new ServerError(null)))
   })
 })
