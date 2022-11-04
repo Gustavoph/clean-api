@@ -3,6 +3,7 @@ import { AddAccountRepository, Hasher, FindAccountByNameRepository } from '@/dat
 import { Account } from '@/domain/entities'
 import { AddAccount } from '@/domain/usecases'
 import { NameAlreadyInUseError } from '@/domain/errors'
+import { right } from '@/shared'
 
 interface SutType {
   sut: DbAddAccount
@@ -125,5 +126,11 @@ describe('DbAddAccount', () => {
     })
     const promise = sut.add(makeFakeAddAccountData())
     await expect(promise).rejects.toThrow()
+  })
+
+  it('Should return an account if on success', async () => {
+    const { sut } = makeSut()
+    const account = await sut.add(makeFakeAddAccountData())
+    expect(account).toEqual(right(makeFakeAccount()))
   })
 })
