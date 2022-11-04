@@ -1,9 +1,9 @@
 import { Either } from '@/shared'
 import { Account } from '@/domain/entities'
-import { ExistingUserError } from '@/domain/errors'
+import { NameAlreadyInUseError } from '@/domain/errors'
 
 export interface AddAccount {
-  add: (account: AddAccount.Params) => Promise<Either<ExistingUserError, AddAccount.Result>>
+  add: (account: AddAccount.Params) => Promise<Either<NameAlreadyInUseError, AddAccount.Result>>
 }
 
 export namespace AddAccount {

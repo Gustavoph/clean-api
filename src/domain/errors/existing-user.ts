@@ -1,6 +1,6 @@
-export class ExistingUserError extends Error {
+export class NameAlreadyInUseError extends Error {
   constructor (name: string) {
-    super(`User ${name} already registered.`)
-    this.name = 'ExistingUserError'
+    super(`Name ${name} already registered.`)
+    this.name = 'NameAlreadyInUseError'
   }
 }

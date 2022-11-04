@@ -75,4 +75,11 @@ describe('DbAddAccount', () => {
     await sut.add(makeFakeAddAccountData())
     expect(findSpy).toHaveBeenCalledWith(makeFakeAddAccountData().name)
   })
+
+  it('Should call FindAccountByNameRepository with correct name', async () => {
+    const { sut, findAccountByNameRepositoryStub } = makeSut()
+    const findSpy = jest.spyOn(findAccountByNameRepositoryStub, 'find')
+    await sut.add(makeFakeAddAccountData())
+    expect(findSpy).toHaveBeenCalledWith(makeFakeAddAccountData().name)
+  })
 })
