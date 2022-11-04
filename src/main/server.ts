@@ -1,4 +1,6 @@
-import express from 'express'
+import { connection } from '@/infra/repositories/mssql/helpers'
 
-const app = express()
-app.listen(5050, () => console.log('Server running at http://localhost:5050'))
+connection.initialize().then(async () => {
+  const app = (await import('./config/app')).default
+  app.listen(5050, () => console.log('Server running at http://localhost:5050'))
+}).catch(err => console.log(err))

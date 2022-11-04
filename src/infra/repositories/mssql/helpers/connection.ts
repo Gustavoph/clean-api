@@ -7,7 +7,7 @@ export const connection = new DataSource({
   username: 'dbadmin',
   password: '@rv0re24Xcv',
   database: 'SATLTRUCAOECO',
-  entities: ['src/infra/repositories/typeorm/entities/*.ts'],
+  entities: ['src/infra/repositories/mssql/entities/*.ts'],
   logging: false,
   synchronize: true,
   options: { encrypt: false },
