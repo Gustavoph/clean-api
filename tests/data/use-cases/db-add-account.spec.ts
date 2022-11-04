@@ -86,6 +86,15 @@ describe('DbAddAccount', () => {
     expect(accountOrError.value).toEqual(new NameAlreadyInUseError(makeFakeAddAccountData().name))
   })
 
+  it('Should throws if FindAccountByNameRepository throw', async () => {
+    const { sut, findAccountByNameRepositoryStub } = makeSut()
+    jest.spyOn(findAccountByNameRepositoryStub, 'find').mockImplementationOnce(async () => {
+      throw new Error('')
+    })
+    const promise = sut.add(makeFakeAddAccountData())
+    await expect(promise).rejects.toThrow()
+  })
+
   it('Should call Hasher with correct text', async () => {
     const { sut, hasherStub } = makeSut()
     const hashSpy = jest.spyOn(hasherStub, 'hash')
